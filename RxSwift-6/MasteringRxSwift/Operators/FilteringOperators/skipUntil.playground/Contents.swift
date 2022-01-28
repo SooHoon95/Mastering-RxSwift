@@ -1,27 +1,3 @@
-//
-//  Mastering RxSwift
-//  Copyright (c) KxCoding <help@kxcoding.com>
-//
-//  Permission is hereby granted, free of charge, to any person obtaining a copy
-//  of this software and associated documentation files (the "Software"), to deal
-//  in the Software without restriction, including without limitation the rights
-//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//  copies of the Software, and to permit persons to whom the Software is
-//  furnished to do so, subject to the following conditions:
-//
-//  The above copyright notice and this permission notice shall be included in
-//  all copies or substantial portions of the Software.
-//
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-//  THE SOFTWARE.
-//
-
-
 import UIKit
 import RxSwift
 
@@ -31,4 +7,31 @@ import RxSwift
 
 let disposeBag = DisposeBag()
 
+let subject = PublishSubject<Int>()
+let trigger = PublishSubject<Int>()
 
+//subject.skipUntil(trigger)
+//    .subscribe {print($0)}
+//    .disposed(by: disposeBag)
+//
+//
+//subject.onNext(1) //서브젝트에서 요소 방출했으나, 아직 트리거가 요소를 방출한적이 없기때문에, subject의 방출 요소는 구독자에게 전달되지 않는다.
+//
+//trigger.onNext(0)
+//// subject가 이전에 방출한 요소는 여전히 구독자에게 전달되고 있지않다.
+//// skipUntin은 trigger가 요소를 방출한 이후 부터 원본 옵저버블에서 방출한 요소를 구독자로 전달한다.
+//
+//subject.onNext(2)
+
+
+//==============
+//Swift 6
+//==============
+subject.skip(until: trigger)
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
+
+
+subject.onNext(1) // Nothing Happened
+trigger.onNext(3) // Nothing Happened
+subject.onNext(1234) // >> next(1234)

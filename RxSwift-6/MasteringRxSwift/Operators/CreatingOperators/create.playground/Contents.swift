@@ -1,28 +1,6 @@
-//
-//  Mastering RxSwift
-//  Copyright (c) KxCoding <help@kxcoding.com>
-//
-//  Permission is hereby granted, free of charge, to any person obtaining a copy
-//  of this software and associated documentation files (the "Software"), to deal
-//  in the Software without restriction, including without limitation the rights
-//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//  copies of the Software, and to permit persons to whom the Software is
-//  furnished to do so, subject to the following conditions:
-//
-//  The above copyright notice and this permission notice shall be included in
-//  all copies or substantial portions of the Software.
-//
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-//  THE SOFTWARE.
-//
-
 import UIKit
 import RxSwift
+import Dispatch
 
 /*:
  # create
@@ -34,6 +12,30 @@ enum MyError: Error {
    case error
 }
 
+Observable<String>.create { (observer) -> Disposable in
+    guard let url = URL(string: "https://www.apple1234.com")
+    else {
+        observer.onError(MyError.error)
+        return Disposables.create() // s 반드시 필요
+    } // 에러발생시 애러 이벤트 전달 후 종료
+    
+    guard let html = try? String(contentsOf: url, encoding:  .utf8) else { // url을가져와서 문자열로 저장 실패시 에러이벤트 전달
+        observer.onError(MyError.error)
+        return Disposables.create()
+    }
+    
+    observer.onNext(html) // 파라미터로 방출할 요소를 기입
+    observer.onCompleted()
+    
+    observer.onNext("After completed") // completed, error 걸렸기 때문에 무슨일이 있어도 방출 되지 않는다.
+    
+    return Disposables.create()
+}
+
+// 구독
+
+.subscribe { print($0) }
+.disposed(by: disposeBag)
 
 
 

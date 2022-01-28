@@ -1,26 +1,3 @@
-//
-//  Mastering RxSwift
-//  Copyright (c) KxCoding <help@kxcoding.com>
-//
-//  Permission is hereby granted, free of charge, to any person obtaining a copy
-//  of this software and associated documentation files (the "Software"), to deal
-//  in the Software without restriction, including without limitation the rights
-//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//  copies of the Software, and to permit persons to whom the Software is
-//  furnished to do so, subject to the following conditions:
-//
-//  The above copyright notice and this permission notice shall be included in
-//  all copies or substantial portions of the Software.
-//
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-//  THE SOFTWARE.
-//
-
 import UIKit
 import RxSwift
 import RxCocoa
@@ -31,9 +8,31 @@ import RxCocoa
 
 let bag = DisposeBag()
 
+let prelay = PublishRelay<Int>() // 빈생성자
+
+
+prelay.subscribe { print("1: \($0)") }
+.disposed(by: bag)
+
+prelay.accept(1) // subject에서는 onNext 로 이벤트 전달했지만 relay는 accept 를 사용한다.
+
+ //===============================
+
+let brelay = BehaviorRelay(value: 1) // 최초 value
+brelay.accept(2)
+
+brelay.subscribe { print("2: \($0)") }
+.disposed(by: bag)
+
+brelay.accept(3)
+print(brelay.value)
 
 
 
+let rrelay = ReplayRelay<Int>.create(bufferSize: 3)
+// 버퍼 크기 설정
 
+(1...10).forEach { rrelay.accept($0) }
 
-
+rrelay.subscribe { print("3: \($0)") }
+.disposed(by: bag)
